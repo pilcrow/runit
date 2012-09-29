@@ -13,7 +13,7 @@ chpst - runs a program with a changed process state
 <h2><a name='sect1'>Synopsis</a></h2>
 <b>chpst</b> [-vP012]
 [-u <i>user</i>] [-U <i>user</i>] [-b <i>argv0</i>] [-e <i>dir</i>] [-/ <i>root</i>] [-n <i>inc</i>] [-l|-L <i>lock</i>] [-m <i>bytes</i>] [-d <i>bytes</i>]
-[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] <i>prog</i> 
+[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] [-A <i>seconds</i>] <i>prog</i> 
 <h2><a name='sect2'>Description</a></h2>
 <i>prog</i> consists of one or
 more arguments. <p>
@@ -101,6 +101,11 @@ file size to <i>bytes</i> bytes. </dd>
 <dt><b>-v</b> </dt>
 <dd>verbose. Print verbose messages to standard error.
 This includes warnings about limits unsupported by the system. </dd>
+
+<dt><b>-A <i>seconds</b> </i></dt>
+<dd>alarm.
+Schedule a SIGALRM for <i>prog</i> in <i>seconds</i> seconds, or clear
+any pending alarm if <i>seconds</i> is zero. </dd>
 
 <dt><b>-P</b> </dt>
 <dd>pgrphack.

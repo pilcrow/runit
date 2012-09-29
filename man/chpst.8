@@ -30,6 +30,8 @@ chpst \- runs a program with a changed process state
 .IR bytes ]
 [-c
 .IR bytes ]
+[-A
+.IR seconds ]
 .I prog
 .SH DESCRIPTION
 .I prog
@@ -212,6 +214,16 @@ bytes.
 verbose.
 Print verbose messages to standard error.
 This includes warnings about limits unsupported by the system.
+.TP
+.B \-A \fIseconds
+alarm.
+Schedule a SIGALRM for
+.I prog
+in
+.I seconds
+seconds, or clear any pending alarm if
+.I seconds
+is zero.
 .TP
 .B \-P
 pgrphack.
