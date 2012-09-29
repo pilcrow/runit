@@ -3,7 +3,7 @@
 chpst \- runs a program with a changed process state
 .SH SYNOPSIS
 .B chpst
-[\-vPN012]
+[\-vNP012]
 [\-u
 .IR user ]
 [\-U
@@ -213,12 +213,6 @@ verbose.
 Print verbose messages to standard error.
 This includes warnings about limits unsupported by the system.
 .TP
-.B \-P
-pgrphack.
-Run
-.I prog
-in a new process group.
-.TP
 .B \-N
 Interpret
 .IR \-0 ,
@@ -228,6 +222,12 @@ and
 as reopening standard I/O streams to
 .IR /dev/null ,
 rather than as closing the streams.
+.TP
+.B \-P
+pgrphack.
+Run
+.I prog
+in a new process group.
 .TP
 .B \-0
 Close standard input (default), or reopen it to
