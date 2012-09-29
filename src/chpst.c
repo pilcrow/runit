@@ -51,6 +51,7 @@ unsigned int devnull =0;
 unsigned int nostdin =0;
 unsigned int nostdout =0;
 unsigned int nostderr =0;
+long setalrm =-1;
 long limitd =-2;
 long limits =-2;
 long limitl =-2;
@@ -330,7 +331,7 @@ int main(int argc, const char **argv) {
   if (str_equal(progname, "setlock")) setlock(argc, argv);
   if (str_equal(progname, "softlimit")) softlimit(argc, argv);
 
-  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vPN012V"))
+  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:A:vNP012V"))
          != opteof)
     switch(opt) {
     case 'u': set_user =(char*)optarg; break;
@@ -364,8 +365,9 @@ int main(int argc, const char **argv) {
     case 'l': if (lock) usage(); lock =optarg; lockdelay =1; break;
     case 'L': if (lock) usage(); lock =optarg; lockdelay =0; break;
     case 'v': verbose =1; break;
-    case 'P': pgrp =1; break;
+    case 'A': if (optarg[scan_ulong(optarg, &ul)]) usage(); setalrm =ul; break;
     case 'N': devnull =1; break;
+    case 'P': pgrp =1; break;
     case '0': nostdin =1; break;
     case '1': nostdout =1; break;
     case '2': nostderr =1; break;
@@ -390,6 +392,7 @@ int main(int argc, const char **argv) {
   if (set_user) suidgid(set_user, 1);
   if (lock) slock(lock, lockdelay, 0);
   slimit();
+  if (setalrm >= 0) alarm(setalrm);
 
   progname =*argv;
   if (argv0) *argv =argv0;

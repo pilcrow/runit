@@ -13,7 +13,7 @@ chpst - runs a program with a changed process state
 <h2><a name='sect1'>Synopsis</a></h2>
 <b>chpst</b> [-vNP012]
 [-u <i>user</i>] [-U <i>user</i>] [-b <i>argv0</i>] [-e <i>dir</i>] [-/ <i>root</i>] [-n <i>inc</i>] [-l|-L <i>lock</i>] [-m <i>bytes</i>] [-d <i>bytes</i>]
-[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] <i>prog</i> 
+[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] [-A <i>seconds</i>] <i>prog</i> 
 <h2><a name='sect2'>Description</a></h2>
 <i>prog</i> consists of one or
 more arguments. <p>
@@ -98,17 +98,22 @@ the output file size to <i>bytes</i> bytes. </dd>
 <dd>limit core size. Limit the core
 file size to <i>bytes</i> bytes. </dd>
 
+<dt><b>-A <i>seconds</b> </i></dt>
+<dd>alarm.
+Schedule a SIGALRM for <i>prog</i> in <i>seconds</i> seconds, or clear
+any pending alarm if <i>seconds</i> is zero. </dd>
+
 <dt><b>-v</b> </dt>
 <dd>verbose. Print verbose messages to standard error.
 This includes warnings about limits unsupported by the system. </dd>
 
-<dt><b>-P</b> </dt>
-<dd>pgrphack.
-Run <i>prog</i> in a new process group. </dd>
-
 <dt><b>-N</b> </dt>
 <dd>Interpret <i>-0</i>, <i>-1</i> and <i>-2</i> as reopening standard
 I/O streams to <i>/dev/null</i>, rather than as closing the streams. </dd>
+
+<dt><b>-P</b> </dt>
+<dd>pgrphack.
+Run <i>prog</i> in a new process group. </dd>
 
 <dt><b>-0</b> </dt>
 <dd>Close standard input (default), or reopen it to

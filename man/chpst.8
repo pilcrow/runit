@@ -30,6 +30,8 @@ chpst \- runs a program with a changed process state
 .IR bytes ]
 [-c
 .IR bytes ]
+[-A
+.IR seconds ]
 .I prog
 .SH DESCRIPTION
 .I prog
@@ -207,6 +209,16 @@ limit core size.
 Limit the core file size to
 .I bytes
 bytes.
+.TP
+.B \-A \fIseconds
+alarm.
+Schedule a SIGALRM for
+.I prog
+in
+.I seconds
+seconds, or clear any pending alarm if
+.I seconds
+is zero.
 .TP
 .B \-v
 verbose.
