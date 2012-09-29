@@ -331,7 +331,7 @@ int main(int argc, const char **argv) {
   if (str_equal(progname, "setlock")) setlock(argc, argv);
   if (str_equal(progname, "softlimit")) softlimit(argc, argv);
 
-  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vPN012V"))
+  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:A:vNP012V"))
          != opteof)
     switch(opt) {
     case 'u': set_user =(char*)optarg; break;
@@ -366,8 +366,8 @@ int main(int argc, const char **argv) {
     case 'L': if (lock) usage(); lock =optarg; lockdelay =0; break;
     case 'v': verbose =1; break;
     case 'A': if (optarg[scan_ulong(optarg, &ul)]) usage(); setalrm =ul; break;
-    case 'P': pgrp =1; break;
     case 'N': devnull =1; break;
+    case 'P': pgrp =1; break;
     case '0': nostdin =1; break;
     case '1': nostdout =1; break;
     case '2': nostderr =1; break;
