@@ -106,16 +106,24 @@ This includes warnings about limits unsupported by the system. </dd>
 <dd>pgrphack.
 Run <i>prog</i> in a new process group. </dd>
 
+<dt><b>-N</b> </dt>
+<dd>Interpret <i>-0</i>, <i>-1</i> and <i>-2</i> as reopening standard
+I/O streams to <i>/dev/null</i>, rather than as closing the streams. </dd>
+
 <dt><b>-0</b> </dt>
-<dd>Close standard input before starting
+<dd>Close standard input (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
 <i>prog</i>. </dd>
 
 <dt><b>-1</b> </dt>
-<dd>Close standard output before starting <i>prog</i>. </dd>
+<dd>Close standard output (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
+<i>prog</i>. </dd>
 
 <dt><b>-2</b> </dt>
-<dd>Close standard error
-before starting <i>prog</i>. </dd>
+<dd>Close standard error (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
+<i>prog</i>. </dd>
 </dl>
 
 <h2><a name='sect4'>Exit Codes</a></h2>

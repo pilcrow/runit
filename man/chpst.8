@@ -3,7 +3,7 @@
 chpst \- runs a program with a changed process state
 .SH SYNOPSIS
 .B chpst
-[\-vP012]
+[\-vPN012]
 [\-u
 .IR user ]
 [\-U
@@ -219,16 +219,35 @@ Run
 .I prog
 in a new process group.
 .TP
+.B \-N
+Interpret
+.IR \-0 ,
+.IR \-1
+and
+.IR \-2
+as reopening standard I/O streams to
+.IR /dev/null ,
+rather than as closing the streams.
+.TP
 .B \-0
-Close standard input before starting
+Close standard input (default), or reopen it to
+.IR /dev/null
+(\fI\-N\fP),
+before starting
 .IR prog .
 .TP
 .B \-1
-Close standard output before starting
+Close standard output (default), or reopen it to
+.IR /dev/null
+(\fI\-N\fP),
+before starting
 .IR prog .
 .TP
 .B \-2
-Close standard error before starting
+Close standard error (default), or reopen it to
+.IR /dev/null
+(\fI\-N\fP),
+before starting
 .IR prog .
 .SH EXIT CODES
 .B chpst

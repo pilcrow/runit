@@ -19,8 +19,11 @@
 #include "open.h"
 #include "openreadclose.h"
 #include "direntry.h"
+#include "fd.h"
+#include "coe.h"
+#include "buffer.h"
 
-#define USAGE_MAIN " [-vP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] prog"
+#define USAGE_MAIN " [-vPN012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] prog"
 #define FATAL "chpst: fatal: "
 #define WARNING "chpst: warning: "
 
@@ -44,6 +47,7 @@ const char *argv0 =0;
 const char *env_dir =0;
 unsigned int verbose =0;
 unsigned int pgrp =0;
+unsigned int devnull =0;
 unsigned int nostdin =0;
 unsigned int nostdout =0;
 unsigned int nostderr =0;
@@ -257,6 +261,46 @@ void slimit() {
   }
 }
 
+void coe012(int in, int out, int err) {
+  if (in) if (coe(0) == -1)
+    fatal("unable to set close-on-exec on standard input");
+  if (out) if (coe(1) == -1)
+    fatal("unable to set close-on-exec on standard output");
+  if (err) if (coe(2) == -1)
+    fatal("unable to set close-on-exec on standard error");
+}
+
+void dn012(int in, int out, int err) {
+  int dn;
+
+  if (in) {
+    if ((dn =open_read("/dev/null")) == -1)
+      fatal("unable to open /dev/null for reading");
+    if (fd_move(0, dn) == -1)
+      fatal("unable to duplicate /dev/null to standard input");
+  }
+
+  if (out || err) {
+    if ((dn =open_write("/dev/null")) == -1)
+      fatal("unable to open /dev/null for writing");
+
+    if (out) if (fd_copy(1, dn) == -1)
+      fatal("unable to duplicate /dev/null to standard output");
+
+    if (err) {
+      int newerr =fd_dup(2);
+      if (newerr == -1) fatal("unable to duplicate standard error");
+      if (coe(newerr) == -1)
+        fatal("unable to set close-on-exec on duplicated standard error");
+      buffer_2->fd = newerr;
+      if (fd_copy(2, dn) == -1)
+        fatal("unable to duplicate /dev/null to standard error");
+    }
+
+    close(dn);
+  }
+}
+
 /* argv[0] */
 void setuidgid(int, const char *const *);
 void envuidgid(int, const char *const *);
@@ -286,7 +330,7 @@ int main(int argc, const char **argv) {
   if (str_equal(progname, "setlock")) setlock(argc, argv);
   if (str_equal(progname, "softlimit")) softlimit(argc, argv);
 
-  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vP012V"))
+  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vPN012V"))
          != opteof)
     switch(opt) {
     case 'u': set_user =(char*)optarg; break;
@@ -321,6 +365,7 @@ int main(int argc, const char **argv) {
     case 'L': if (lock) usage(); lock =optarg; lockdelay =0; break;
     case 'v': verbose =1; break;
     case 'P': pgrp =1; break;
+    case 'N': devnull =1; break;
     case '0': nostdin =1; break;
     case '1': nostdout =1; break;
     case '2': nostderr =1; break;
@@ -332,6 +377,7 @@ int main(int argc, const char **argv) {
 
   if (pgrp) setsid();
   if (env_dir) edir(env_dir);
+  (devnull?dn012:coe012)(nostdin, nostdout, nostderr);
   if (root) {
     if (chdir(root) == -1) fatal2("unable to change directory", root);
     if (chroot(".") == -1) fatal("unable to change root directory");
@@ -343,9 +389,6 @@ int main(int argc, const char **argv) {
   if (env_user) euidgid(env_user, 1);
   if (set_user) suidgid(set_user, 1);
   if (lock) slock(lock, lockdelay, 0);
-  if (nostdin) if (close(0) == -1) fatal("unable to close stdin");
-  if (nostdout) if (close(1) == -1) fatal("unable to close stdout");
-  if (nostderr) if (close(2) == -1) fatal("unable to close stderr");
   slimit();
 
   progname =*argv;

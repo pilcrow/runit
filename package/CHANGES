@@ -1,3 +1,9 @@
+2.1.1-devnull.patch
+Wed, 12 Sep 2012 14:57:01 +0000
+  * chpst.c, man/chpst.8: new option -N: change -0, -1, -2 to reopen to
+    /dev/null, rather than close.  Also, -2 no longer suppresses error
+    messages pre-exec(). (Mike Pomraning)
+
 2.1.1
 Sun, 04 Oct 2009 20:28:38 +0000
   * doc/upgrade.html: fix typo.
