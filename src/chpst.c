@@ -379,7 +379,7 @@ int main(int argc, const char **argv) {
     case '0': nostdin =1; break;
     case '1': nostdout =1; break;
     case '2': nostderr =1; break;
-    case 'V': strerr_warn1("$Id: f279d44141c981dd7535a12260efcf1ef7beed26 $", 0);
+    case 'V': strerr_warn1("chpst:pilcrow/runit-2.1.1:2012100101", 0);
     case '?': usage();
     }
   argv +=optind;

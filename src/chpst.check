@@ -23,14 +23,22 @@ chpst -L"${ctmp}" true
 echo $?
 rm -f "${ctmp}"
 
+# -A
+
 # -m
+# -d
 # -o
 # -p
 # -f
 # -c
+# -r
+# -t
 
 chpst -P true
 echo $?
 
 chpst -012 true
+echo $?
+
+chpst -N012 true
 echo $?
