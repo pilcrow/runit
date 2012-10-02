@@ -3,7 +3,7 @@
 chpst \- runs a program with a changed process state
 .SH SYNOPSIS
 .B chpst
-[\-vNP012]
+[\-vV?NP012]
 [\-u
 .IR user ]
 [\-U
@@ -18,6 +18,8 @@ chpst \- runs a program with a changed process state
 .IR inc ]
 [-l|-L
 .IR lock ]
+[-A
+.IR seconds ]
 [-m
 .IR bytes ]
 [-d
@@ -30,7 +32,9 @@ chpst \- runs a program with a changed process state
 .IR bytes ]
 [-c
 .IR bytes ]
-[-A
+[-r
+.IR bytes ]
+[-t
 .IR seconds ]
 .I prog
 .SH DESCRIPTION
@@ -70,7 +74,7 @@ is prefixed with a colon, the
 .I user
 and all
 .I group
-arguments are interpreted as uid and gids respectivly, and not looked up in
+arguments are interpreted as uid and gids respectively, and not looked up in
 the password or group file.
 All initial supplementary groups are removed.
 .TP
@@ -175,41 +179,6 @@ The same as \-l, but fail immediately if
 .I lock
 is locked by another process.
 .TP
-.B \-m \fIbytes
-limit memory.
-Limit the data segment, stack segment, locked physical pages, and total of
-all segment per process to
-.I bytes
-bytes each.
-.TP
-.B \-d \fIbytes
-limit data segment.
-Limit the data segment per process to
-.I bytes
-bytes.
-.TP
-.B \-o \fIn
-limit open files.
-Limit the number of open file descriptors per process to
-.IR n .
-.TP
-.B \-p \fIn
-limit processes.
-Limit the number of processes per uid to
-.IR n .
-.TP
-.B \-f \fIbytes
-limit output size.
-Limit the output file size to
-.I bytes
-bytes.
-.TP
-.B \-c \fIbytes
-limit core size.
-Limit the core file size to
-.I bytes
-bytes.
-.TP
 .B \-A \fIseconds
 alarm.
 Schedule a SIGALRM for
@@ -219,11 +188,6 @@ in
 seconds, or clear any pending alarm if
 .I seconds
 is zero.
-.TP
-.B \-v
-verbose.
-Print verbose messages to standard error.
-This includes warnings about limits unsupported by the system.
 .TP
 .B \-N
 Interpret
@@ -261,6 +225,68 @@ Close standard error (default), or reopen it to
 (\fI\-N\fP),
 before starting
 .IR prog .
+.TP
+.B \-v
+verbose.
+Print verbose messages to standard error.
+This includes warnings about limits unsupported by the system.
+.TP
+.B \-V
+version string.
+Print a version string to standard error.
+.P
+Options controlling soft resource limits.  For each limit below, an argument of
+.IR =
+sets the soft limit to the hard limit.  Arguments
+greater than the hard limit are silently reduced to the hard limit.
+.TP
+.B \-m \fIbytes
+limit memory.
+Limit the data segment, stack segment, locked physical pages, and total of
+all segment per process to
+.I bytes
+bytes each.
+.TP
+.B \-d \fIbytes
+limit data segment.
+Limit the data segment per process to
+.I bytes
+bytes.
+.TP
+.B \-o \fIn
+limit open files.
+Limit the number of open file descriptors per process to
+.IR n .
+.TP
+.B \-p \fIn
+limit processes.
+Limit the number of processes per uid to
+.IR n .
+.TP
+.B \-f \fIbytes
+limit output size.
+Limit the output file size to
+.I bytes
+bytes.
+.TP
+.B \-c \fIbytes
+limit core size.
+Limit the core file size to
+.I bytes
+bytes.
+.TP
+.B \-r \fIbytes
+limit resident set size.
+Limit resident set size to
+.I bytes
+bytes (if physical memory is full).
+.TP
+.B \-t \fIseconds
+limit CPU time.
+Limit CPU time to
+.I seconds
+seconds, delivering a SIGXCPU thereafter.  Compare
+\fB\-A \fIseconds\fP.
 .SH EXIT CODES
 .B chpst
 exits 100 when called with wrong options.

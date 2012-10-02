@@ -11,9 +11,9 @@
 <h2><a name='sect0'>Name</a></h2>
 chpst - runs a program with a changed process state 
 <h2><a name='sect1'>Synopsis</a></h2>
-<b>chpst</b> [-vNP012]
-[-u <i>user</i>] [-U <i>user</i>] [-b <i>argv0</i>] [-e <i>dir</i>] [-/ <i>root</i>] [-n <i>inc</i>] [-l|-L <i>lock</i>] [-m <i>bytes</i>] [-d <i>bytes</i>]
-[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] [-A <i>seconds</i>] <i>prog</i> 
+<b>chpst</b> [-vVNP012]
+[-u <i>user</i>] [-U <i>user</i>] [-b <i>argv0</i>] [-e <i>dir</i>] [-/ <i>root</i>] [-n <i>inc</i>] [-l|-L <i>lock</i>] [-A <i>seconds</i>] [-m <i>bytes</i>] [-d <i>bytes</i>]
+[-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] [-r <i>bytes</i>] [-t <i>seconds</i>] <i>prog</i>
 <h2><a name='sect2'>Description</a></h2>
 <i>prog</i> consists of one or
 more arguments. <p>
@@ -30,7 +30,7 @@ and a <i>group</i>, set the gid to <i>group</i>&rsquo;s gid, as found in <i>/etc
 of <i>user</i>&rsquo;s gid. If <i>group</i> consists of a colon-separated list of group names,
 <b>chpst</b> sets the group ids of all listed groups. If <i>user</i> is prefixed with
 a colon, the <i>user</i> and all <i>group</i> arguments are interpreted as uid and gids
-respectivly, and not looked up in the password or group file. All initial
+respectively, and not looked up in the password or group file. All initial
 supplementary groups are removed. </dd>
 
 <dt><b>-U <i>[:]user[:group]</b> </i></dt>
@@ -73,6 +73,48 @@ process, wait until a new lock can be obtained. </dd>
 <dd>The same as -l, but
 fail immediately if <i>lock</i> is locked by another process. </dd>
 
+<dt><b>-A <i>seconds</b> </i></dt>
+<dd>alarm.
+Schedule a SIGALRM for <i>prog</i> in <i>seconds</i> seconds, or clear
+any pending alarm if <i>seconds</i> is zero. </dd>
+
+<dt><b>-N</b> </dt>
+<dd>Interpret <i>-0</i>, <i>-1</i> and <i>-2</i> as reopening standard
+I/O streams to <i>/dev/null</i>, rather than as closing the streams. </dd>
+
+<dt><b>-P</b> </dt>
+<dd>pgrphack.
+Run <i>prog</i> in a new process group. </dd>
+
+<dt><b>-0</b> </dt>
+<dd>Close standard input (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
+<i>prog</i>. </dd>
+
+<dt><b>-1</b> </dt>
+<dd>Close standard output (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
+<i>prog</i>. </dd>
+
+<dt><b>-2</b> </dt>
+<dd>Close standard error (default), or reopen it to
+<i>/dev/null</i> (<i>-N</i>), before starting
+<i>prog</i>. </dd>
+
+<dt><b>-v</b> </dt>
+<dd>verbose. Print verbose messages to standard error.
+This includes warnings about limits unsupported by the system. </dd>
+
+<dt><b>-V</b> </dt>
+<dd>version string. Print a version string to standard error. </dd>
+
+</dl>
+
+Options controlling soft resource limits.  For each limit below, an
+argument of <i>=</i> sets the soft limit to the hard limit.  Arguments
+greater than the hard limit are silently reduced to the hard limit.
+
+<dl>
 <dt><b>-m <i>bytes</b> </i></dt>
 <dd>limit memory.
 Limit the data segment, stack segment, locked physical pages, and total
@@ -98,37 +140,14 @@ the output file size to <i>bytes</i> bytes. </dd>
 <dd>limit core size. Limit the core
 file size to <i>bytes</i> bytes. </dd>
 
-<dt><b>-A <i>seconds</b> </i></dt>
-<dd>alarm.
-Schedule a SIGALRM for <i>prog</i> in <i>seconds</i> seconds, or clear
-any pending alarm if <i>seconds</i> is zero. </dd>
+<dt><b>-r <i>bytes</b> </i></dt>
+<dd>limit resident set size. Limit resident set size to <i>bytes</i> bytes
+(if physical memory is full). </dd>
 
-<dt><b>-v</b> </dt>
-<dd>verbose. Print verbose messages to standard error.
-This includes warnings about limits unsupported by the system. </dd>
+<dt><b>-t <i>seconds</b> </i></dt>
+<dd>limit CPU time.  Limit CPU time to <i>seconds</i> seconds, delivering
+a SIGXCPU thereafter.  Compare <b>-A <i>seconds</i></b>.</dd>
 
-<dt><b>-N</b> </dt>
-<dd>Interpret <i>-0</i>, <i>-1</i> and <i>-2</i> as reopening standard
-I/O streams to <i>/dev/null</i>, rather than as closing the streams. </dd>
-
-<dt><b>-P</b> </dt>
-<dd>pgrphack.
-Run <i>prog</i> in a new process group. </dd>
-
-<dt><b>-0</b> </dt>
-<dd>Close standard input (default), or reopen it to
-<i>/dev/null</i> (<i>-N</i>), before starting
-<i>prog</i>. </dd>
-
-<dt><b>-1</b> </dt>
-<dd>Close standard output (default), or reopen it to
-<i>/dev/null</i> (<i>-N</i>), before starting
-<i>prog</i>. </dd>
-
-<dt><b>-2</b> </dt>
-<dd>Close standard error (default), or reopen it to
-<i>/dev/null</i> (<i>-N</i>), before starting
-<i>prog</i>. </dd>
 </dl>
 
 <h2><a name='sect4'>Exit Codes</a></h2>

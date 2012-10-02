@@ -23,7 +23,7 @@
 #include "coe.h"
 #include "buffer.h"
 
-#define USAGE_MAIN " [-vNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] prog"
+#define USAGE_MAIN " [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
 #define FATAL "chpst: fatal: "
 #define WARNING "chpst: warning: "
 
