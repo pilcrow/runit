@@ -1,11 +1,17 @@
-2.1.1-20120929
-Wed, 12 Sep 2012 14:57:01 +0000
-  * chpst.c, man/chpst.8:
+2.1.1:2012100101
+Mon, 01 Oct 2012 23:10:01 -0500
+  * chpst.c:
      . option -N with -0, -1, -2 reopens to /dev/null instead of closing
-     . -2 now close-on-exec, preserving late error messages
      . -A sets process alarm
-    (Mike Pomraning)
-  * man/chpst.8, doc/chpst.8.html: document the above
+     . rlimit options accept '=', just like softlimit
+     . -2 now close-on-exec, preserving late error messages
+     . usage() text displays all supported options
+     . softlimit usage() message fixed with invalid rlimit argument
+  * chpst.check, chpst.dist: test -N option
+  * man/chpst.8, doc/chpst.8.html: document the above, particularly new
+    and previously hidden options and explicitly identify rlimits as
+    soft.
+  (Mike Pomraning)
 
 2.1.1
 Sun, 04 Oct 2009 20:28:38 +0000
