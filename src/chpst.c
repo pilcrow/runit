@@ -24,21 +24,21 @@
 #include "buffer.h"
 
 #define USAGE_MAIN " [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
-#define FATAL "chpst: fatal: "
-#define WARNING "chpst: warning: "
+#define FATAL ": fatal: "
+#define WARNING ": warning: "
 
 const char *progname;
 static stralloc sa;
 
-void fatal(const char *m) { strerr_die3sys(111, FATAL, m, ": "); }
+void fatal(const char *m) { strerr_die4sys(111, progname, FATAL, m, ": "); }
 void fatal2(const char *m0, const char *m1) {
-  strerr_die5sys(111, FATAL, m0, ": ", m1, ": ");
+  strerr_die6sys(111, progname, FATAL, m0, ": ", m1, ": ");
 }
 void fatalx(const char *m0, const char *m1) {
-  strerr_die4x(111, FATAL, m0, ": ", m1);
+  strerr_die5x(111, progname, FATAL, m0, ": ", m1);
 }
-void warn(const char *m) { strerr_warn2(WARNING, m, 0); }
-void die_nomem() { strerr_die2x(111, FATAL, "out of memory."); }
+void warn(const char *m) { strerr_warn3(progname, WARNING, m, 0); }
+void die_nomem() { strerr_die3x(111, progname, FATAL, "out of memory."); }
 void usage() { strerr_die4x(100, "usage: ", progname, USAGE_MAIN, "\n"); }
 
 char *set_user =0;
