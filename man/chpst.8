@@ -13,7 +13,7 @@ chpst \- runs a program with a changed process state
 [-e
 .IR dir ]
 [\-/
-.IR root ]
+.IR [+]root ]
 [\-n
 .IR inc ]
 [-l|-L
@@ -145,12 +145,16 @@ removes the environment variable
 .I k
 if it exists, without adding a new variable.
 .TP
-.B \-/ \fIroot
+.B \-/ \fI[+]root
 chroot.
 Change the root directory to
 .I root
 before starting
 .IR prog .
+If
+.I root
+begins with a '+', trim the '+' and perform any account lookups
+and file locking prior to changing root.
 .TP
 .B \-n \fIinc
 nice.
