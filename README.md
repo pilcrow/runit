@@ -6,6 +6,8 @@ Functionality:
 
  * New `-N` option causes `-0`, `-1` and `-2` to reopen standard descriptors
    to /dev/null, before any chroot, rather than closing them.
+ * `-/ +root` works just like `-/ root`, but account lookups (`-u`/`-U`) and
+   lockfiles (`-l`/`-L`) are performed before *chroot(2)*ing.
  * New `-A` option sets an *alarm(2)*.
  * rlimit options now accept '=', just like softlimit.
  * `-2` now preserves previously swallowed error messages
