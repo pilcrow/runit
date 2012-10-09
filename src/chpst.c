@@ -23,7 +23,7 @@
 #include "coe.h"
 #include "buffer.h"
 
-#define USAGE_MAIN " [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
+#define USAGE_MAIN " [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ [+]root] [-n [+|-]nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
 #define FATAL ": fatal: "
 #define WARNING ": warning: "
 
@@ -67,46 +67,41 @@ const char *lock =0;
 const char *root =0;
 unsigned int lockdelay;
 
-void suidgid(char *user, unsigned int ext) {
-  struct uidgid ugid;
-
+void get_uidgid(struct uidgid *ugid, const char *user, unsigned int ext) {
   if (ext) {
-    if (! uidgids_get(&ugid, user)) {
+    if (! uidgids_get(ugid, (char *)user)) {
       if (*user == ':') fatalx("invalid uid/gids", user +1);
       if (errno) fatal("unable to get password/group file entry");
       fatalx("unknown user/group", user);
     }
   }
   else
-    if (! uidgid_get(&ugid, user)) {
+    if (! uidgid_get(ugid, (char *)user)) {
       if (errno) fatal("unable to get password file entry");
       fatalx("unknown account", user);
     }
-  if (setgroups(ugid.gids, ugid.gid) == -1) fatal("unable to setgroups");
-  if (setgid(*ugid.gid) == -1) fatal("unable to setgid");
-  if (prot_uid(ugid.uid) == -1) fatal("unable to setuid");
 }
 
-void euidgid(char *user, unsigned int ext) {
-  struct uidgid ugid;
-  char bufnum[FMT_ULONG];
+void suidgid(struct uidgid *ugid) {
+  if (setgroups(ugid->gids, ugid->gid) == -1) fatal("unable to setgroups");
+  if (setgid(*ugid->gid) == -1) fatal("unable to setgid");
+  if (prot_uid(ugid->uid) == -1) fatal("unable to setuid");
+}
 
-  if (ext) {
-    if (! uidgids_get(&ugid, user)) {
-      if (*user == ':') fatalx("invalid uid/gids", user +1);
-      if (errno) fatal("unable to get password/group file entry");
-      fatalx("unknown user/group", user);
-    }
-  }
-  else
-    if (! uidgid_get(&ugid, user)) {
-      if (errno) fatal("unable to get password file entry");
-      fatalx("unknown account", user);
-    }
+void euidgid(const char *user, unsigned int ext) {
+  char bufnum[FMT_ULONG];
+  struct uidgid ugid;
+
+  get_uidgid(&ugid, user, ext);
   bufnum[fmt_ulong(bufnum, *ugid.gid)] =0;
   if (! pathexec_env("GID", bufnum)) die_nomem();
   bufnum[fmt_ulong(bufnum, ugid.uid)] =0;
   if (! pathexec_env("UID", bufnum)) die_nomem();
+}
+
+void newroot(const char *root) {
+  if (chdir(root) == -1) fatal2("unable to change directory", root);
+  if (chroot(".") == -1) fatal("unable to change root directory");
 }
 
 void edir(const char *dirname) {
@@ -323,6 +318,7 @@ int main(int argc, const char **argv) {
   int opt;
   int i;
   unsigned long ul;
+  struct uidgid proc_ugid ={0};
 
   progname =argv[0];
   for (i =str_len(progname); i; --i)
@@ -388,17 +384,30 @@ int main(int argc, const char **argv) {
   if (pgrp) setsid();
   if (env_dir) edir(env_dir);
   (devnull?dn012:coe012)(nostdin, nostdout, nostderr);
-  if (root) {
-    if (chdir(root) == -1) fatal2("unable to change directory", root);
-    if (chroot(".") == -1) fatal("unable to change root directory");
-  }
   if (nicelvl) {
     errno =0;
     if (nice(nicelvl) == -1) if (errno) fatal("unable to set nice level");
   }
-  if (env_user) euidgid(env_user, 1);
-  if (set_user) suidgid(set_user, 1);
-  if (lock) slock(lock, lockdelay, 0);
+  if (root && root[0] == '+') {
+    /* More sensible chroot behavior:
+     *   . Lookup account info prior to chroot (-u/-U)
+     *   . Obtain lockfile prior to chroot (-l/-L)
+     * Note that we necessarily slock() before dropping privs, unlike
+     * original behavior.
+     */
+    if (env_user) euidgid(env_user, 1);
+    if (set_user) get_uidgid(&proc_ugid, set_user, 1);
+    if (lock) slock(lock, lockdelay, 0);
+    if (root) newroot(root);
+    if (proc_ugid.gids) suidgid(&proc_ugid);
+  } else {
+    /* Less sensible, original behavior */
+    if (root) newroot(root);
+    if (env_user) euidgid(env_user, 1);
+    if (set_user) get_uidgid(&proc_ugid, set_user, 1);
+    if (proc_ugid.gids) suidgid(&proc_ugid);
+    if (lock) slock(lock, lockdelay, 0);
+  }
   slimit();
   if (setalrm >= 0) alarm(setalrm);
 
@@ -422,10 +431,12 @@ void setuidgid_usage() {
 }
 void setuidgid(int argc, const char *const *argv) {
   const char *account;
+  struct uidgid ugid;
 
   if (! (account =*++argv)) setuidgid_usage();
   if (! *++argv) setuidgid_usage();
-  suidgid((char*)account, 0);
+  get_uidgid(&ugid, (char*)account, 0);
+  suidgid(&ugid);
   pathexec(argv);
   fatal2("unable to run", *argv);
 }
