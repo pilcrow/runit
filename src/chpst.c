@@ -398,7 +398,8 @@ int main(int argc, const char **argv) {
     if (env_user) euidgid(env_user, 1);
     if (set_user) get_uidgid(&proc_ugid, set_user, 1);
     if (lock) slock(lock, lockdelay, 0);
-    if (root) newroot(root);
+    root++;
+    newroot(root);
     if (proc_ugid.gids) suidgid(&proc_ugid);
   } else {
     /* Less sensible, original behavior */
