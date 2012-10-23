@@ -8,6 +8,8 @@ Functionality:
    to /dev/null, before any chroot, rather than closing them.
  * `-/ +root` works just like `-/ root`, but account lookups (`-u`/`-U`) and
    lockfiles (`-l`/`-L`) are performed before *chroot(2)*.
+ * `-x` option exits successfully and silently if file locking fails, like
+   *setlock*.
  * New `-A` option sets or clears an *alarm(2)*.
  * Soft resource limit options now accept '=', just like *softlimit*.
  * `-2` now preserves previously swallowed error messages

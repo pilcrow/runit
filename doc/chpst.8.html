@@ -11,7 +11,7 @@
 <h2><a name='sect0'>Name</a></h2>
 chpst - runs a program with a changed process state 
 <h2><a name='sect1'>Synopsis</a></h2>
-<b>chpst</b> [-vVNP012]
+<b>chpst</b> [-xvVNP012]
 [-u <i>user</i>] [-U <i>user</i>] [-b <i>argv0</i>] [-e <i>dir</i>] [-/ <i>[+]root</i>] [-n <i>inc</i>] [-l|-L <i>lock</i>] [-A <i>seconds</i>] [-m <i>bytes</i>] [-d <i>bytes</i>]
 [-o <i>n</i>] [-p <i>n</i>] [-f <i>bytes</i>] [-c <i>bytes</i>] [-r <i>bytes</i>] [-t <i>seconds</i>] <i>prog</i>
 <h2><a name='sect2'>Description</a></h2>
@@ -67,12 +67,13 @@ starting <i>prog</i>. <i>inc</i> must be an integer, and may start with a minus 
 
 <dt><b>-l <i>lock</b> </i></dt>
 <dd>lock. Open the file <i>lock</i> for writing, and obtain an exclusive lock
-on it. <i>lock</i> will be created if it does not exist. If <i>lock</i> is locked by another
-process, wait until a new lock can be obtained. </dd>
+on it. <i>lock</i> will be created if it does not exist. If <i>lock</i> is
+locked by another process, wait until a new lock can be obtained.  See also
+<i>-x</i>.</dd>
 
 <dt><b>-L <i>lock</b> </i></dt>
-<dd>The same as -l, but
-fail immediately if <i>lock</i> is locked by another process. </dd>
+<dd>The same as <i>-l</i>, but fail immediately if <i>lock</i> is locked by
+another process.  See also <i>-x</i>.</dd>
 
 <dt><b>-A <i>seconds</b> </i></dt>
 <dd>alarm.
@@ -101,6 +102,10 @@ Run <i>prog</i> in a new process group. </dd>
 <dd>Close standard error (default), or reopen it to
 <i>/dev/null</i> (<i>-N</i>), before starting
 <i>prog</i>. </dd>
+
+<dt><b>-x</b> </dt>
+<dd>exit success.  Silently exit 0 if <i>-l</i> or <i>-L</i> fails for any reason.
+By default <b>chpst</b> will warn and exit 111.
 
 <dt><b>-v</b> </dt>
 <dd>verbose. Print verbose messages to standard error.

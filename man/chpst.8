@@ -3,7 +3,7 @@
 chpst \- runs a program with a changed process state
 .SH SYNOPSIS
 .B chpst
-[\-vVNP012]
+[\-xvVNP012]
 [\-u
 .IR user ]
 [\-U
@@ -177,11 +177,12 @@ will be created if it does not exist.
 If
 .I lock
 is locked by another process, wait until a new lock can be obtained.
+See also \fI\-x\fP.
 .TP
 .B \-L \fIlock
 The same as \-l, but fail immediately if
 .I lock
-is locked by another process.
+is locked by another process.  See also \fI\-x\fP.
 .TP
 .B \-A \fIseconds
 alarm.
@@ -229,6 +230,12 @@ Close standard error (default), or reopen it to
 (\fI\-N\fP),
 before starting
 .IR prog .
+.TP
+.B \-x
+exit success.  Silently exit 0 if \fI\-l\fP or \fI\-L\fP fails for any reason.
+By default
+.B chpst
+will warn and exit 111.
 .TP
 .B \-v
 verbose.

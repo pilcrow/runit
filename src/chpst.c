@@ -23,7 +23,7 @@
 #include "coe.h"
 #include "buffer.h"
 
-#define USAGE_MAIN " [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ [+]root] [-n [+|-]nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
+#define USAGE_MAIN " [-xvVPN012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ [+]root] [-n [+|-]nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog"
 #define FATAL ": fatal: "
 #define WARNING ": warning: "
 
@@ -66,6 +66,7 @@ long nicelvl =0;
 const char *lock =0;
 const char *root =0;
 unsigned int lockdelay;
+unsigned int lockexit0 =0;
 
 void get_uidgid(struct uidgid *ugid, const char *user, unsigned int ext) {
   if (ext) {
@@ -336,7 +337,7 @@ int main(int argc, const char **argv) {
   if (str_equal(progname, "setlock")) setlock(argc, argv);
   if (str_equal(progname, "softlimit")) softlimit(argc, argv);
 
-  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:A:vNP012V"))
+  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:A:vxNP012V"))
          != opteof)
     switch(opt) {
     case 'u': set_user =(char*)optarg; break;
@@ -368,6 +369,7 @@ int main(int argc, const char **argv) {
       break;
     case 'l': if (lock) usage(); lock =optarg; lockdelay =1; break;
     case 'L': if (lock) usage(); lock =optarg; lockdelay =0; break;
+    case 'x': lockexit0 =1; break;
     case 'v': verbose =1; break;
     case 'A': if (optarg[scan_ulong(optarg, &ul)]) usage(); setalrm =ul; break;
     case 'N': devnull =1; break;
@@ -380,6 +382,8 @@ int main(int argc, const char **argv) {
     }
   argv +=optind;
   if (! argv || ! *argv) usage();
+
+  if (lockexit0 && ! lock) usage();
 
   if (pgrp) setsid();
   if (env_dir) edir(env_dir);
@@ -397,7 +401,7 @@ int main(int argc, const char **argv) {
      */
     if (env_user) euidgid(env_user, 1);
     if (set_user) get_uidgid(&proc_ugid, set_user, 1);
-    if (lock) slock(lock, lockdelay, 0);
+    if (lock) slock(lock, lockdelay, lockexit0);
     root++;
     newroot(root);
     if (proc_ugid.gids) suidgid(&proc_ugid);
@@ -407,7 +411,7 @@ int main(int argc, const char **argv) {
     if (env_user) euidgid(env_user, 1);
     if (set_user) get_uidgid(&proc_ugid, set_user, 1);
     if (proc_ugid.gids) suidgid(&proc_ugid);
-    if (lock) slock(lock, lockdelay, 0);
+    if (lock) slock(lock, lockdelay, lockexit0);
   }
   slimit();
   if (setalrm >= 0) alarm(setalrm);
