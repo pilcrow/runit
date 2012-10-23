@@ -1,4 +1,4 @@
-## runit-2.1.1 2012101001 cheese fork
+## runit-2.1.1 cheese fork (2012102301)
 
 Small improvements to the *chpst(8)* utility of the runit suite.
 
