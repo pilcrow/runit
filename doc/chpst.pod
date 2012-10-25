@@ -1,0 +1,133 @@
+=head1 Name
+
+chpst - run a program with a changed process state
+
+=head1 Synopsis
+
+B<chpst> [-vVNP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ [+]root] [-n nice] [-l|-L lock] [-A n] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] [-r n] [-t n] prog
+
+=head1 Description
+
+B<chpst> changes the process state according to the given options, and then
+runs I<prog>.
+
+I<prog> consists of one or more arguments.
+
+=head1 Options
+
+Options controlling privilege.
+Options controlling execution context.
+Options controlling resource limits.
+Other options.
+
+=head2 Options controlling privilege
+
+=over 4
+
+=item -u I<[:]user[:group[:group...]]>
+
+setuidgid.  Change uid and gid to that of I<user>'s uid and gid as found in the
+system database (typically F</etc/passwd>) before running I<prog>.  All initial
+supplementary groups are removed.
+
+If I<user> is followed by a colon and a I<group>, set the gid to the I<group>'s
+gid as found in the system database (F</etc/group>), instead of I<user>'s gid.
+If I<group> is a colon-separated list of names, B<chpst> sets the group ids of
+all listed groups.
+
+If I<user> is prefixed with a colon, the I<user> and all I<group> arguments are
+interpreted as numeric uids and gids, and not looked up in the system database.
+
+=item -U I<[:]user[:group]>
+
+envuidgid.  Set the environment variables $UID and $GID to the specified uid
+and gid.  I<user> and I<group> are looked up as described under C<-u>, except
+that I<group> may only be a single group name or gid.
+
+(Though C<-U> does not actually change process privilege I<per se>, it is
+listed here because some programs use the values in $UID and $GID for their own
+L<setuid(2)> and L<setgid(2)> calls.)
+
+=item -/ I<[+]root>
+
+chroot.  Change the root directory to I<root> before starting I<prog>, and set
+the current working directory to the new root.
+
+If I<root> begins with a ’+’, trim the ’+’ and perform any file locking
+(C<-l>/C<-L>) and account lookups ((C<-u>/C<-U>) prior to changing root.
+
+=back
+
+=head2 Options controlling general process attributes
+
+=over 4
+
+=item -b I<argv0>
+
+argv0.  Run I<prog> with I<argv0> as the 0th argument.
+
+=item -e I<dir>
+
+envdir.  Set various environment variables as specified by files in the directory I<dir>.  If I<dir> contains a file F<k> whose first line is F<v>, B<chpst> removes the environment variable I<k> if it exists and then adds the environment variable I<k> with the value I<v>.  The name I<k> must not contain '='.  Spaces and tabs at the end of I<v> are removed, and nulls in I<v> are changed to newlines.
+
+If the file F<k> is empty (0 bytes long), B<chpst> removes the environment variable I<k> if it exists, without adding a new variable.
+
+=item -n I<inc>
+
+nice.  Add I<inc> to the L<nice(2)> value before starting I<prog>.  I<inc> must be an integer, and may start iwth a minus or a plus.
+
+=item -l I<lock>
+
+=item -L I<lock>
+
+lock.  Open the file F<lock> for writing, and obtain an exclusive lock on it.  F<lock> will be created if it does not exist.  C<-l> will wait indefinitely to obtain a new lock if F<lock> is already locked by another process, whereas C<-L> will fail immediately.
+
+=item -P
+
+pgrphack.  Run I<prog> in a new process group.
+
+=item -N
+
+=item -0
+
+=item -1
+
+=item -2
+
+Close standard input, output or error before starting I<prog>.  With C<-N>,
+instead reopen the file descriptors to F</dev/null>.
+
+=back
+
+=head2 Options controlling soft resource limits.
+
+The following options change the soft resource limits before running I<prog>.
+In all cases an argument of '=' sets the soft limit to the current hard limit,
+and soft limits above the current hard limit are silently lowered to the hard
+limit.
+
+=head1 Exit Codes
+
+=head1 Emulation
+
+B<chpst> emulates the behavior of the following utilities from the I<daemontools> package if called with the appropriate name:
+
+=over 2
+
+B<envuidgid> I<account prog> # chpst -U account prog
+
+B<setuidgid> I<account prog> # chpst -u account prog
+
+B<setlock> 
+
+=back
+
+=head1 See Also
+
+http://cr.yp.to/daemontools.html
+
+env(1), nice(1), ulimit(1), alarm(3), chroot(2), setrlimit(2), setsid(2),
+setuid(2)
+
+
+=head1 Author
